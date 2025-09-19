@@ -1,5 +1,5 @@
 # interfaces/pantallaPrincipal/parteSuperior.py
-from PyQt6.QtWidgets import QFrame, QLabel, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QFrame, QLabel, QPushButton
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QLinearGradient, QPainter, QBrush, QColor, QIcon, QPixmap
 
@@ -7,7 +7,6 @@ class BotonConfiguracion(QPushButton):
     def __init__(self):
         super().__init__()
         self.configurarBoton()
-        self.conectarEventos()
         
     def configurarBoton(self):
         """Configurar estilo y icono del botón"""
@@ -40,44 +39,12 @@ class BotonConfiguracion(QPushButton):
                 border: 2px solid rgba(220, 220, 220, 1.0);
             }
         """)
-        
-    def conectarEventos(self):
-        """Conectar eventos del botón"""
-        self.clicked.connect(self.mostrarMensajeConfiguracion)
-    
-    def mostrarMensajeConfiguracion(self):
-        """Mostrar mensaje de desarrollo"""
-        mensaje = QMessageBox()
-        mensaje.setIcon(QMessageBox.Icon.Information)
-        mensaje.setWindowTitle("Configuración")
-        mensaje.setText("En desarrollo")
-        mensaje.setInformativeText("La funcionalidad de configuración está siendo desarrollada.")
-        mensaje.setStandardButtons(QMessageBox.StandardButton.Ok)
-        
-        mensaje.setStyleSheet("""
-            QMessageBox {
-                background-color: white;
-                font-family: 'Segoe UI';
-            }
-            QMessageBox QPushButton {
-                background-color: #0D9648;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                font-weight: bold;
-            }
-            QMessageBox QPushButton:hover {
-                background-color: #0a7a3a;
-            }
-        """)
-        
-        mensaje.exec()
 
 class WidgetParteSuperior(QFrame):
     def __init__(self):
         super().__init__()
         self.precisionModelo = 95.0
+        self.ventanaConfiguracion = None
         self.configurarWidget()
         self.crearComponentes()
         
@@ -158,6 +125,7 @@ class WidgetParteSuperior(QFrame):
         self.etiquetaPorcentaje.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
     def crearIconoMRD(self):
+        """Crear icono MRD"""
         self.etiquetaIcono = QLabel(self)
         self.etiquetaIcono.setGeometry(275, 10, 80, 60)
         
@@ -177,6 +145,28 @@ class WidgetParteSuperior(QFrame):
         self.botonConfiguracion = BotonConfiguracion()
         self.botonConfiguracion.setParent(self)
         self.botonConfiguracion.move(1195, 30)
+        
+        # Conectar el evento click para abrir la ventana de configuración
+        self.botonConfiguracion.clicked.connect(self.abrirVentanaConfiguracion)
+    
+    def abrirVentanaConfiguracion(self):
+        """Abrir la ventana de configuración"""
+        # Importar aquí para evitar importación circular
+        from interfaces.pantallaConfiguracion.InterfazConfiguracion import VentanaConfiguracion
+        
+        # Solo crear una ventana si no existe ya una abierta
+        if self.ventanaConfiguracion is None or not self.ventanaConfiguracion.isVisible():
+            self.ventanaConfiguracion = VentanaConfiguracion()
+            
+            # Conectar señal para limpiar la referencia cuando se cierre
+            self.ventanaConfiguracion.ventanaCerrada.connect(self.ventanaConfiguracionCerrada)
+            
+            # Mostrar la ventana
+            self.ventanaConfiguracion.show()
+    
+    def ventanaConfiguracionCerrada(self):
+        """Callback cuando se cierra la ventana de configuración"""
+        self.ventanaConfiguracion = None
     
     def paintEvent(self, event):
         """Dibujar gradiente de fondo"""
