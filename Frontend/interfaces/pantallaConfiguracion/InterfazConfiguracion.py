@@ -1,173 +1,58 @@
 # interfaces/pantallaConfiguracion/InterfazConfiguracion.py
-from PyQt6.QtWidgets import QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QWidget
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
 
 class VentanaConfiguracion(QMainWindow):
     # Señal para comunicar el cierre de la ventana
     ventanaCerrada = pyqtSignal()
     
-    def __init__(self):
+    def __init__(self, ventana_padre=None):
         super().__init__()
+        self.ventana_padre = ventana_padre
+        self.arrastrando = False
+        self.posicion_click = None
         self.configurarVentana()
         self.crearInterfaz()
         
     def configurarVentana(self):
         """Configurar propiedades básicas de la ventana de configuración"""
-        self.setWindowTitle("Configuración - SAIDI Analysis")
-        self.setFixedSize(800, 600)
-        self.centrarVentana()
+        # Quitar la barra de título y hacer la ventana sin marco
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
+        
+        # Tamaño fijo según especificaciones de Figma
+        self.setFixedSize(1123, 450)
+        
+        # Posicionar relativo a la ventana padre
+        self.posicionarRelativoAPadre()
+        
         self.setStyleSheet("QMainWindow { background-color: white; }")
         
         # Hacer la ventana modal (bloquea la ventana principal)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         
-    def centrarVentana(self):
-        """Centrar la ventana en la pantalla"""
-        from PyQt6.QtWidgets import QApplication
-        screen = QApplication.primaryScreen()
-        geometria = screen.availableGeometry()
-        
-        x = (geometria.width() - self.width()) // 2
-        y = (geometria.height() - self.height()) // 2
-        
-        x = max(0, x)
-        y = max(0, y)
-        
-        self.move(x, y)
+    def posicionarRelativoAPadre(self):
+        """Posicionar la ventana relativa a la ventana padre"""
+        if self.ventana_padre:
+            # Obtener la posición de la ventana padre
+            pos_padre = self.ventana_padre.pos()
+            
+            # Calcular la posición relativa (79, 50) dentro de la ventana padre
+            nueva_x = pos_padre.x() + 79
+            nueva_y = pos_padre.y() + 50
+            
+            # Posicionar la ventana
+            self.move(nueva_x, nueva_y)
+        else:
+            # Fallback a posición absoluta si no hay ventana padre
+            self.move(79, 50)
         
     def crearInterfaz(self):
-        """Crear la interfaz de configuración"""
+        """Crear la interfaz de configuración (contenedor principal)"""
         widget_central = QWidget()
         self.setCentralWidget(widget_central)
         
-        # Layout principal
-        layout_principal = QVBoxLayout()
-        layout_principal.setContentsMargins(50, 50, 50, 50)
-        layout_principal.setSpacing(30)
-        
-        # Título de la ventana de configuración
-        self.crearTitulo(layout_principal)
-        
-        # Área de contenido (en blanco por ahora)
-        self.crearAreaContenido(layout_principal)
-        
-        # Botones de acción
-        self.crearBotones(layout_principal)
-        
-        widget_central.setLayout(layout_principal)
-        
-    def crearTitulo(self, layout):
-        """Crear título de la ventana de configuración"""
-        titulo = QLabel("Configuración del Sistema")
-        titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        fuente_titulo = QFont("Segoe UI", 24)
-        fuente_titulo.setBold(True)
-        fuente_titulo.setWeight(QFont.Weight.Bold)
-        
-        titulo.setFont(fuente_titulo)
-        titulo.setStyleSheet("""
-            QLabel {
-                color: #0D9648;
-                padding: 20px;
-                border-bottom: 2px solid #0D9648;
-                margin-bottom: 20px;
-            }
-        """)
-        
-        layout.addWidget(titulo)
-        
-    def crearAreaContenido(self, layout):
-        """Crear área de contenido principal (en blanco por ahora)"""
-        contenido = QLabel("Esta ventana está en construcción.\n\nAquí se mostrarán las opciones de configuración del sistema.")
-        contenido.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        fuente_contenido = QFont("Segoe UI", 14)
-        contenido.setFont(fuente_contenido)
-        
-        contenido.setStyleSheet("""
-            QLabel {
-                background-color: #f8f9fa;
-                border: 2px dashed #0D9648;
-                border-radius: 10px;
-                padding: 40px;
-                color: #666;
-                line-height: 1.6;
-            }
-        """)
-        
-        layout.addWidget(contenido)
-        
-    def crearBotones(self, layout):
-        """Crear botones de acción"""
-        # Layout horizontal para botones
-        from PyQt6.QtWidgets import QHBoxLayout
-        layout_botones = QHBoxLayout()
-        layout_botones.setSpacing(15)
-        
-        # Espaciador izquierdo
-        layout_botones.addStretch()
-        
-        # Botón Aceptar
-        boton_aceptar = QPushButton("Aceptar")
-        boton_aceptar.setFixedSize(120, 40)
-        boton_aceptar.clicked.connect(self.aceptar)
-        boton_aceptar.setStyleSheet("""
-            QPushButton {
-                background-color: #0D9648;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-weight: bold;
-                font-size: 12px;
-            }
-            QPushButton:hover {
-                background-color: #0a7a3a;
-            }
-            QPushButton:pressed {
-                background-color: #085d2c;
-            }
-        """)
-        
-        # Botón Cancelar
-        boton_cancelar = QPushButton("Cancelar")
-        boton_cancelar.setFixedSize(120, 40)
-        boton_cancelar.clicked.connect(self.cancelar)
-        boton_cancelar.setStyleSheet("""
-            QPushButton {
-                background-color: #6c757d;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-weight: bold;
-                font-size: 12px;
-            }
-            QPushButton:hover {
-                background-color: #5a6268;
-            }
-            QPushButton:pressed {
-                background-color: #4e555b;
-            }
-        """)
-        
-        layout_botones.addWidget(boton_aceptar)
-        layout_botones.addWidget(boton_cancelar)
-        
-        # Espaciador derecho
-        layout_botones.addStretch()
-        
-        layout.addLayout(layout_botones)
-        
-    def aceptar(self):
-        """Acción del botón Aceptar"""
-        # Aquí se procesarían las configuraciones
-        print("Configuraciones guardadas") # Debug temporal
-        self.cerrar()
-        
-    def cancelar(self):
-        """Acción del botón Cancelar"""
-        self.cerrar()
+        # Aquí se cargarán los componentes desde otros archivos
+        # Similar a como funciona interfaz.py
         
     def cerrar(self):
         """Cerrar la ventana de configuración"""
@@ -178,3 +63,34 @@ class VentanaConfiguracion(QMainWindow):
         """Evento al cerrar la ventana"""
         self.ventanaCerrada.emit()
         super().closeEvent(event)
+        
+    def mousePressEvent(self, event):
+        """Iniciar el arrastre de ambas ventanas"""
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.arrastrando = True
+            self.posicion_click = event.globalPosition().toPoint()
+        
+    def mouseMoveEvent(self, event):
+        """Mover ambas ventanas al arrastrar"""
+        if self.arrastrando and event.buttons() == Qt.MouseButton.LeftButton:
+            # Calcular la diferencia de movimiento
+            nueva_posicion = event.globalPosition().toPoint()
+            diferencia = nueva_posicion - self.posicion_click
+            
+            # Mover la ventana de configuración
+            nueva_pos_config = self.pos() + diferencia
+            self.move(nueva_pos_config)
+            
+            # Mover también la ventana padre
+            if self.ventana_padre:
+                nueva_pos_padre = self.ventana_padre.pos() + diferencia
+                self.ventana_padre.move(nueva_pos_padre)
+            
+            # Actualizar la posición de referencia
+            self.posicion_click = nueva_posicion
+            
+    def mouseReleaseEvent(self, event):
+        """Finalizar el arrastre"""
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.arrastrando = False
+            self.posicion_click = None

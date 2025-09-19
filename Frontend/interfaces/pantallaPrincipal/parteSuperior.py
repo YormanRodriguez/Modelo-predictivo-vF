@@ -152,11 +152,15 @@ class WidgetParteSuperior(QFrame):
     def abrirVentanaConfiguracion(self):
         """Abrir la ventana de configuración"""
         # Importar aquí para evitar importación circular
-        from interfaces.pantallaConfiguracion.InterfazConfiguracion import VentanaConfiguracion
+        from interfaces.pantallaConfiguracion.interfazConfiguracion import VentanaConfiguracion
         
         # Solo crear una ventana si no existe ya una abierta
         if self.ventanaConfiguracion is None or not self.ventanaConfiguracion.isVisible():
-            self.ventanaConfiguracion = VentanaConfiguracion()
+            # Obtener referencia a la ventana principal
+            ventana_principal = self.window()  # Esto obtiene la ventana principal QMainWindow
+            
+            # Crear la ventana de configuración pasando la ventana padre
+            self.ventanaConfiguracion = VentanaConfiguracion(ventana_principal)
             
             # Conectar señal para limpiar la referencia cuando se cierre
             self.ventanaConfiguracion.ventanaCerrada.connect(self.ventanaConfiguracionCerrada)
