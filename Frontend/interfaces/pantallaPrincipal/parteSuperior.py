@@ -1,7 +1,7 @@
 # interfaces/pantallaPrincipal/parteSuperior.py
 from PyQt6.QtWidgets import QFrame, QLabel, QPushButton, QMessageBox
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QLinearGradient, QPainter, QBrush, QColor, QIcon
+from PyQt6.QtGui import QFont, QLinearGradient, QPainter, QBrush, QColor, QIcon, QPixmap
 
 class BotonConfiguracion(QPushButton):
     def __init__(self):
@@ -93,11 +93,12 @@ class WidgetParteSuperior(QFrame):
         self.crearEtiquetaPrecision()
         self.crearEtiquetaPorcentaje()
         self.crearBotonConfiguracion()
+        self.crearIconoMRD()
         
     def crearTituloPrincipal(self):
         """Crear título SAIDI Analysis"""
         self.etiquetaTitulo = QLabel("SAIDI Analysis", self)
-        self.etiquetaTitulo.setGeometry(10, 15, 245, 45)
+        self.etiquetaTitulo.setGeometry(25, 15, 245, 45)
         
         fuenteTitulo = QFont("Segoe UI", 28)
         fuenteTitulo.setBold(True)
@@ -111,7 +112,7 @@ class WidgetParteSuperior(QFrame):
         """Crear subtítulo descriptivo"""
         textoSubtitulo = "Sistema Integral de Análisis Predictivo y Simulación Meteorológica"
         self.etiquetaSubtitulo = QLabel(textoSubtitulo, self)
-        self.etiquetaSubtitulo.setGeometry(10, 70, 727, 30)
+        self.etiquetaSubtitulo.setGeometry(25, 70, 727, 30)
         
         fuenteSubtitulo = QFont("Segoe UI", 16)
         fuenteSubtitulo.setWeight(QFont.Weight.Normal)
@@ -155,6 +156,21 @@ class WidgetParteSuperior(QFrame):
         self.etiquetaPorcentaje.setFont(fuentePorcentaje)
         self.etiquetaPorcentaje.setStyleSheet("color: white; background-color: transparent; border: none;")
         self.etiquetaPorcentaje.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+
+    def crearIconoMRD(self):
+        self.etiquetaIcono = QLabel(self)
+        self.etiquetaIcono.setGeometry(275, 10, 80, 60)
+        
+        rutaIcono = "Frontend/recursos/iconos/Logo_MRD.png"
+        pixmap = QPixmap(rutaIcono)
+        
+        if not pixmap.isNull():
+            pixmapEscalado = pixmap.scaled(80, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            self.etiquetaIcono.setPixmap(pixmapEscalado)
+        else:
+            self.etiquetaIcono.setText("ICO")
+            self.etiquetaIcono.setStyleSheet("color: white; background-color: transparent; border: none;")
+            self.etiquetaIcono.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
     def crearBotonConfiguracion(self):
         """Crear botón de configuración con icono"""

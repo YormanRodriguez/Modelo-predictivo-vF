@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
 
 from interfaces.pantallaPrincipal.parteSuperior import WidgetParteSuperior
-# from interfaces.pantallaPrincipal.parteMediaSuperior import WidgetParteMediaSuperior
+from interfaces.pantallaPrincipal.parteMediaSuperior import WidgetParteMediaSuperior
 # from interfaces.pantallaPrincipal.parteMediaInferior import WidgetParteMediaInferior  
 # from interfaces.pantallaPrincipal.parteInferior import WidgetParteInferior
 
@@ -47,7 +47,7 @@ class VentanaPrincipalSAIDI(QMainWindow):
         
         # Cargar cada parte de la interfaz
         self.cargarParteSuperior(layout_principal)
-        # self.cargarParteMediaSuperior(layout_principal)
+        self.cargarParteMediaSuperior(layout_principal)
         # self.cargarParteMediaInferior(layout_principal)  
         # self.cargarParteInferior(layout_principal)
         
@@ -60,9 +60,8 @@ class VentanaPrincipalSAIDI(QMainWindow):
         
     def cargarParteMediaSuperior(self, layout):
         """Cargar la parte media superior (gestión de datos)"""
-        # self.parte_media_superior = WidgetParteMediaSuperior()
-        # layout.addWidget(self.parte_media_superior)
-        pass
+        self.parte_media_superior = WidgetParteMediaSuperior()
+        layout.addWidget(self.parte_media_superior)
         
     def cargarParteMediaInferior(self, layout):
         """Cargar la parte media inferior (simulador)"""
